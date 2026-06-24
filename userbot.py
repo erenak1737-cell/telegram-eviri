@@ -25,8 +25,13 @@ def translate(text: str) -> str:
 
 
 # Saved Messages'a forward edilen mesajları çevir
-@client.on(events.NewMessage(chats="me"))
+@client.on(events.NewMessage())
 async def forward_translate(event):
+    me = await client.get_me()
+    # Sadece Saved Messages (kendi chat'i)
+    if event.chat_id != me.id:
+        return
+    print(f"Saved Messages mesaj: forward={event.forward}, text={event.text}")
     if not event.forward:
         return
     if not event.text or len(event.text.strip()) < 3:
