@@ -25,24 +25,19 @@ def translate(text: str) -> str:
 
 
 # Saved Messages'a forward edilen mesajları çevir
-@client.on(events.NewMessage(outgoing=True, chats="me"))
+@client.on(events.NewMessage(incoming=True, chats="me"))
 async def forward_translate(event):
-    # Forward edilmiş mesaj mı?
     if not event.forward:
         return
     if not event.text or len(event.text.strip()) < 3:
         return
-
-    result = translate(event.text)
-    original_lang = ""
     try:
-        from langdetect import detect
         lang = detect(event.text)
         if lang == "tr":
-            return  # Zaten Türkçe, çevirme
-    except:
+            return
+    except LangDetectException:
         pass
-
+    result = translate(event.text)
     await client.send_message("me", f"🇹🇷 **Çeviri:**\n{result}")
 
 
