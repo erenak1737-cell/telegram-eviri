@@ -1,19 +1,21 @@
 import logging
 import os
+import deepl
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-from deep_translator import GoogleTranslator
 from langdetect import detect, LangDetectException
 
 logging.basicConfig(level=logging.INFO)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
-translator = GoogleTranslator(source="auto", target="tr")
+DEEPL_API_KEY = os.environ.get("DEEPL_API_KEY", "")
+deepl_client = deepl.DeepLClient(DEEPL_API_KEY)
 
 
 def translate(text: str) -> str:
     try:
-        return translator.translate(text)
+        result = deepl_client.translate_text(text, target_lang="TR")
+        return result.text
     except Exception as e:
         return f"[Çeviri hatası: {e}]"
 
