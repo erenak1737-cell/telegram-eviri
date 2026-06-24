@@ -25,7 +25,7 @@ def translate(text: str) -> str:
 
 
 # Saved Messages'a forward edilen mesajları çevir
-@client.on(events.NewMessage(incoming=True, chats="me"))
+@client.on(events.NewMessage(chats="me"))
 async def forward_translate(event):
     if not event.forward:
         return
