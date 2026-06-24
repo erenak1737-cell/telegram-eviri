@@ -60,14 +60,29 @@ async def tr(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+    text = message.text or message.caption
+    if not text:
+        await message.reply_text("Sadece metin çevirebilirim.")
+        return
+    result = translate(text)
+    await message.reply_text(f"🇹🇷 {result}")
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Merhaba! Herhangi bir mesajı yanıtlayıp /tr yaz — çevirisini sana özel gönderirim."
+        "Merhaba!\n\n"
+        "• Bana herhangi bir metin yaz → çeviririm\n"
+        "• Bana bir mesaj forward et → çeviririm\n"
+        "• Grupta mesajı yanıtla + /tr yaz → sadece sana özel çeviririm"
     )
 
 
 if __name__ == "__main__":
+    from telegram.ext import MessageHandler, filters
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("tr", tr))
+    app.add_handler(MessageHandler(filters.TEXT & filters.ChatType.PRIVATE, handle_message))
     app.run_polling()
